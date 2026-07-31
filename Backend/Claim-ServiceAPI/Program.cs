@@ -6,6 +6,7 @@ using Claim_ServiceAPI.Services.Implementations;
 using Claim_ServiceAPI.Services.Interfaces;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,14 +55,30 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+var publicBaseUrl = builder.Configuration["AppUrls:PublicBaseUrl"]?.TrimEnd('/');
+
 app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.PreSerializeFilters.Add((swagger, httpRequest) =>
+    {
+        var serverUrl = !string.IsNullOrWhiteSpace(publicBaseUrl)
+            ? publicBaseUrl
+            : $"{httpRequest.Scheme}://{httpRequest.Host.Value}";
+
+        swagger.Servers = new List<OpenApiServer>
+        {
+            new()
+            {
+                Url = serverUrl
+            }
+        };
+    });
+});
+
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
@@ -69,6 +86,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Claim Service API" }))
+    .AllowAnonymous();
+
+app.MapGet("/", () => Results.Redirect("/swagger"))
     .AllowAnonymous();
 
 app.MapControllers();
