@@ -1,4 +1,4 @@
-@Claim_ServiceAPI_HostAddress = https://insurance-claim-service-mq7u.onrender.com
+@Claim_ServiceAPI_HostAddress = http://localhost:8080
 
 GET {{Claim_ServiceAPI_HostAddress}}/health
 Accept: application/json
