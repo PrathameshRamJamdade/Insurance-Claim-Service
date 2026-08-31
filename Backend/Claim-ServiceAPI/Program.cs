@@ -88,6 +88,9 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = "Claim Service API" }))
     .AllowAnonymous();
 
+app.MapGet("/health/ready", () => Results.Ok(new { status = "ready", service = "Claim Service API" }))
+    .AllowAnonymous();
+
 app.MapGet("/", () => Results.Redirect("/swagger"))
     .AllowAnonymous();
 

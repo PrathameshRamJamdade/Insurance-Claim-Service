@@ -5,5 +5,5 @@ services:
     rootDir: Backend/Claim-ServiceAPI
     dockerfilePath: ./Dockerfile
     dockerContext: .
-    healthCheckPath: /health
+    healthCheckPath: /health/ready
     autoDeployTrigger: commit
