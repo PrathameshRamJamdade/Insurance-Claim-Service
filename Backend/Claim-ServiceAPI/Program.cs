@@ -43,12 +43,9 @@ builder.Services.AddScoped<IClaimPartyService, ClaimPartyService>();
 builder.Services.AddScoped<IClaimHistoryService, ClaimHistoryService>();
 builder.Services.AddScoped<IClaimLookupService, ClaimLookupService>();
 
-var jwtKey = builder.Configuration["JWT_KEY"]
-    ?? throw new InvalidOperationException("JWT_KEY is missing.");
-var jwtIssuer = builder.Configuration["JWT_ISSUER"]
-    ?? throw new InvalidOperationException("JWT_ISSUER is missing.");
-var jwtAudience = builder.Configuration["JWT_AUDIENCE"]
-    ?? throw new InvalidOperationException("JWT_AUDIENCE is missing.");
+var jwtKey = builder.Configuration["JWT_KEY"];
+var jwtIssuer = builder.Configuration["JWT_ISSUER"];
+var jwtAudience = builder.Configuration["JWT_AUDIENCE"];
 
 builder.Services
     .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -58,7 +55,8 @@ builder.Services
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey)),
+                Encoding.UTF8.GetBytes(jwtKey
+                    ?? throw new InvalidOperationException("JWT_KEY is missing."))),
             ValidateIssuer = true,
             ValidIssuer = jwtIssuer,
             ValidateAudience = true,
