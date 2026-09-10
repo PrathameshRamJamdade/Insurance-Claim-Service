@@ -4,8 +4,11 @@ using Claim_ServiceAPI.Repositories.Implementations;
 using Claim_ServiceAPI.Repositories.Interfaces;
 using Claim_ServiceAPI.Services.Implementations;
 using Claim_ServiceAPI.Services.Interfaces;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -40,7 +43,33 @@ builder.Services.AddScoped<IClaimPartyService, ClaimPartyService>();
 builder.Services.AddScoped<IClaimHistoryService, ClaimHistoryService>();
 builder.Services.AddScoped<IClaimLookupService, ClaimLookupService>();
 
-builder.Services.AddClaimServiceAuthentication(builder.Configuration);
+var jwtKey = builder.Configuration["JWT_KEY"]
+    ?? throw new InvalidOperationException("JWT_KEY is missing.");
+var jwtIssuer = builder.Configuration["JWT_ISSUER"]
+    ?? throw new InvalidOperationException("JWT_ISSUER is missing.");
+var jwtAudience = builder.Configuration["JWT_AUDIENCE"]
+    ?? throw new InvalidOperationException("JWT_AUDIENCE is missing.");
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)),
+            ValidateIssuer = true,
+            ValidIssuer = jwtIssuer,
+            ValidateAudience = true,
+            ValidAudience = jwtAudience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+builder.Services.AddClaimServiceAuthorization();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

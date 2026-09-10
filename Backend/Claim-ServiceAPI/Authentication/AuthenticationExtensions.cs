@@ -1,46 +1,11 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Claim_ServiceAPI.Authentication;
 
 public static class AuthenticationExtensions
 {
-    public static IServiceCollection AddClaimServiceAuthentication(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddClaimServiceAuthorization(this IServiceCollection services)
     {
-        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
-
-        var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>()
-            ?? throw new InvalidOperationException("JWT settings were not found.");
-
-        if (string.IsNullOrWhiteSpace(jwtSettings.SecretKey) || jwtSettings.SecretKey.Length < 32)
-        {
-            throw new InvalidOperationException("JWT secret key must be at least 32 characters long.");
-        }
-
-        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.SecretKey));
-
-        services
-            .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = true;
-                options.SaveToken = true;
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = jwtSettings.ValidateIssuer,
-                    ValidIssuer = jwtSettings.Issuer,
-                    ValidateAudience = jwtSettings.ValidateAudience,
-                    ValidAudience = jwtSettings.Audience,
-                    ValidateLifetime = jwtSettings.ValidateLifetime,
-                    ValidateIssuerSigningKey = jwtSettings.ValidateIssuerSigningKey,
-                    IssuerSigningKey = signingKey,
-                    ClockSkew = TimeSpan.FromMinutes(jwtSettings.ClockSkewMinutes)
-                };
-            });
-
         services.AddAuthorization(options =>
         {
             options.AddPolicy(ClaimServicePolicies.ClaimRead, policy =>
