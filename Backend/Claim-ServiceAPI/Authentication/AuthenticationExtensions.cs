@@ -8,17 +8,6 @@ public static class AuthenticationExtensions
     {
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(ClaimServicePolicies.ClaimRead, policy =>
-                policy.RequireAuthenticatedUser().RequireRole(
-                    ClaimServiceRoles.Customer,
-                    ClaimServiceRoles.Agent,
-                    ClaimServiceRoles.Underwriter,
-                    ClaimServiceRoles.ClaimsOfficer,
-                    ClaimServiceRoles.FinanceTeam,
-                    ClaimServiceRoles.CustomerSupport,
-                    ClaimServiceRoles.Administrator,
-                    ClaimServiceRoles.Management));
-
             options.AddPolicy(ClaimServicePolicies.ClaimCreate, policy =>
                 policy.RequireAuthenticatedUser().RequireRole(
                     ClaimServiceRoles.Customer,

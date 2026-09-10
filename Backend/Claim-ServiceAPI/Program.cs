@@ -4,6 +4,7 @@ using Claim_ServiceAPI.Repositories.Implementations;
 using Claim_ServiceAPI.Repositories.Interfaces;
 using Claim_ServiceAPI.Services.Implementations;
 using Claim_ServiceAPI.Services.Interfaces;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -62,11 +63,21 @@ builder.Services
             ValidateAudience = true,
             ValidAudience = jwtAudience,
             ValidateLifetime = true,
-            ClockSkew = TimeSpan.Zero
+            ClockSkew = TimeSpan.Zero,
+            RoleClaimType = ClaimTypes.Role,
+            NameClaimType = ClaimTypes.Name
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(ClaimServicePolicies.ClaimRead, policy => policy
+        .RequireAuthenticatedUser()
+        .RequireAssertion(context =>
+            context.User.IsInRole("ClaimsAdjuster") ||
+            context.User.HasClaim("permission", "Claim.Read")));
+});
+
 builder.Services.AddClaimServiceAuthorization();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
