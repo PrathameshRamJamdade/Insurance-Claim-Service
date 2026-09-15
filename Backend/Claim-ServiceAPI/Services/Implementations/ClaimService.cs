@@ -26,6 +26,16 @@ public class ClaimService : IClaimService
             .ToList();
     }
 
+    public async Task<IReadOnlyList<ClaimSummaryDto>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default)
+    {
+        var claims = await _claimRepository.GetByCustomerIdAsync(customerId, cancellationToken);
+
+        return claims
+            .Where(claim => !claim.IsDeleted)
+            .Select(claim => claim.ToSummaryDto())
+            .ToList();
+    }
+
     public async Task<ClaimDetailDto?> GetByIdAsync(long claimId, CancellationToken cancellationToken = default)
     {
         var claim = await _claimRepository.GetByIdAsync(claimId, includeDetails: true, cancellationToken: cancellationToken);

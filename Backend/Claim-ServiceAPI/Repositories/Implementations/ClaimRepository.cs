@@ -21,6 +21,14 @@ public class ClaimRepository : IClaimRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<Claim>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default)
+    {
+        return await BuildBaseQuery(asNoTracking: true)
+            .Where(claim => claim.CustomerId == customerId)
+            .OrderByDescending(claim => claim.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Claim?> GetByIdAsync(long claimId, bool includeDetails = false, bool asNoTracking = true, CancellationToken cancellationToken = default)
     {
         var query = includeDetails

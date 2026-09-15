@@ -6,6 +6,8 @@ public interface IClaimService
 {
     Task<IReadOnlyList<ClaimSummaryDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<ClaimSummaryDto>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default);
+
     Task<ClaimDetailDto?> GetByIdAsync(long claimId, CancellationToken cancellationToken = default);
 
     Task<ClaimDetailDto?> GetByClaimNumberAsync(string claimNumber, CancellationToken cancellationToken = default);
