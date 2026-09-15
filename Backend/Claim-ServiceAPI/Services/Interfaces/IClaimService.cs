@@ -8,11 +8,15 @@ public interface IClaimService
 
     Task<IReadOnlyList<ClaimSummaryDto>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<ClaimSummaryDto>> GetByCustomerIdentityIdAsync(Guid customerIdentityId, CancellationToken cancellationToken = default);
+
     Task<ClaimDetailDto?> GetByIdAsync(long claimId, CancellationToken cancellationToken = default);
 
     Task<ClaimDetailDto?> GetByClaimNumberAsync(string claimNumber, CancellationToken cancellationToken = default);
 
     Task<ClaimDetailDto> CreateAsync(CreateClaimDto dto, CancellationToken cancellationToken = default);
+
+    Task<ClaimDetailDto> CreateAsync(CreateClaimDto dto, Guid customerIdentityId, CancellationToken cancellationToken = default);
 
     Task<ClaimDetailDto?> UpdateAsync(long claimId, UpdateClaimDto dto, CancellationToken cancellationToken = default);
 

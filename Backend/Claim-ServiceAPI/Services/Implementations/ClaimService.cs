@@ -36,6 +36,16 @@ public class ClaimService : IClaimService
             .ToList();
     }
 
+    public async Task<IReadOnlyList<ClaimSummaryDto>> GetByCustomerIdentityIdAsync(Guid customerIdentityId, CancellationToken cancellationToken = default)
+    {
+        var claims = await _claimRepository.GetByCustomerIdentityIdAsync(customerIdentityId, cancellationToken);
+
+        return claims
+            .Where(claim => !claim.IsDeleted)
+            .Select(claim => claim.ToSummaryDto())
+            .ToList();
+    }
+
     public async Task<ClaimDetailDto?> GetByIdAsync(long claimId, CancellationToken cancellationToken = default)
     {
         var claim = await _claimRepository.GetByIdAsync(claimId, includeDetails: true, cancellationToken: cancellationToken);
@@ -52,6 +62,11 @@ public class ClaimService : IClaimService
 
     public async Task<ClaimDetailDto> CreateAsync(CreateClaimDto dto, CancellationToken cancellationToken = default)
     {
+        return await CreateAsync(dto, Guid.Empty, cancellationToken);
+    }
+
+    public async Task<ClaimDetailDto> CreateAsync(CreateClaimDto dto, Guid customerIdentityId, CancellationToken cancellationToken = default)
+    {
         await EnsureClaimReferencesAsync(dto.ClaimTypeId, dto.ClaimStatusId, dto.PriorityId, cancellationToken);
 
         if (await _claimRepository.ClaimNumberExistsAsync(dto.ClaimNumber, cancellationToken: cancellationToken))
@@ -60,6 +75,7 @@ public class ClaimService : IClaimService
         }
 
         var claim = dto.ToEntity();
+    claim.CustomerIdentityId = customerIdentityId;
         ClaimServiceSupport.ApplyCreationAudit(claim);
 
         await _claimRepository.AddAsync(claim, cancellationToken);

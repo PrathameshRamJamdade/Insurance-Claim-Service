@@ -31,15 +31,12 @@ public class ClaimsController : ClaimControllerBase
     [Authorize(Roles = ClaimServiceRoles.Customer)]
     public async Task<ActionResult<IReadOnlyList<ClaimSummaryDto>>> GetMyClaimsAsync(CancellationToken cancellationToken)
     {
-        var customerIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
-
-        if (!long.TryParse(customerIdValue, out var customerId))
+        if (!TryGetCustomerIdentityId(out var customerIdentityId))
         {
             return Forbid();
         }
 
-        var claims = await _claimService.GetByCustomerIdAsync(customerId, cancellationToken);
+        var claims = await _claimService.GetByCustomerIdentityIdAsync(customerIdentityId, cancellationToken);
         return Ok(claims);
     }
 
@@ -65,7 +62,10 @@ public class ClaimsController : ClaimControllerBase
     {
         try
         {
-            var claim = await _claimService.CreateAsync(dto, cancellationToken);
+            var claim = User.IsInRole(ClaimServiceRoles.Customer)
+                ? await CreateCustomerClaimAsync(dto, cancellationToken)
+                : await _claimService.CreateAsync(dto, cancellationToken);
+
             return CreatedAtAction(nameof(GetByIdAsync), new { claimId = claim.ClaimId }, claim);
         }
         catch (InvalidOperationException exception)
@@ -95,5 +95,23 @@ public class ClaimsController : ClaimControllerBase
     {
         var deleted = await _claimService.DeleteAsync(claimId, cancellationToken);
         return deleted ? NoContent() : NotFound();
+    }
+
+    private async Task<ClaimDetailDto> CreateCustomerClaimAsync(CreateClaimDto dto, CancellationToken cancellationToken)
+    {
+        if (!TryGetCustomerIdentityId(out var customerIdentityId))
+        {
+            throw new InvalidOperationException("The authenticated customer identifier is invalid.");
+        }
+
+        return await _claimService.CreateAsync(dto, customerIdentityId, cancellationToken);
+    }
+
+    private bool TryGetCustomerIdentityId(out Guid customerIdentityId)
+    {
+        var customerIdentityIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+        return Guid.TryParse(customerIdentityIdValue, out customerIdentityId);
     }
 }

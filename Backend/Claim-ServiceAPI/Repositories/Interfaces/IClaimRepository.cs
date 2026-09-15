@@ -8,6 +8,8 @@ public interface IClaimRepository
 
     Task<IReadOnlyList<Claim>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Claim>> GetByCustomerIdentityIdAsync(Guid customerIdentityId, CancellationToken cancellationToken = default);
+
     Task<Claim?> GetByIdAsync(long claimId, bool includeDetails = false, bool asNoTracking = true, CancellationToken cancellationToken = default);
 
     Task<Claim?> GetByClaimNumberAsync(string claimNumber, bool includeDetails = false, bool asNoTracking = true, CancellationToken cancellationToken = default);

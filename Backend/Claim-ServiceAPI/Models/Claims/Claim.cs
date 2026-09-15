@@ -11,6 +11,8 @@ public class Claim : AuditableEntityBase
 
     public long CustomerId { get; set; }
 
+    public Guid CustomerIdentityId { get; set; }
+
     public string ClaimNumber { get; set; } = string.Empty;
 
     public int ClaimTypeId { get; set; }

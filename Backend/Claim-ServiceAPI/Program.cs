@@ -95,6 +95,12 @@ var app = builder.Build();
 
 var publicBaseUrl = builder.Configuration["AppUrls:PublicBaseUrl"]?.TrimEnd('/');
 
+using (var scope = app.Services.CreateScope())
+{
+    var claimDbContext = scope.ServiceProvider.GetRequiredService<ClaimDbContext>();
+    await claimDbContext.Database.MigrateAsync();
+}
+
 app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
