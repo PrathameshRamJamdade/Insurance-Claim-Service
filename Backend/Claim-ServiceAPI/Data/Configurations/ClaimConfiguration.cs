@@ -20,7 +20,14 @@ public class ClaimConfiguration : IEntityTypeConfiguration<Claim>
             .IsRequired();
 
         builder.Property(entity => entity.CustomerIdentityId)
-            .HasColumnType("uniqueidentifier")
+            .HasColumnType("uniqueidentifier");
+
+        builder.Property(entity => entity.PolicyId)
+            .HasMaxLength(64)
+            .IsRequired();
+
+        builder.Property(entity => entity.CustomerId)
+            .HasMaxLength(64)
             .IsRequired();
 
         builder.HasIndex(entity => entity.ClaimNumber)
@@ -79,7 +86,7 @@ public class ClaimConfiguration : IEntityTypeConfiguration<Claim>
 
         builder.HasIndex(entity => entity.PolicyId);
         builder.HasIndex(entity => entity.CustomerId);
-    builder.HasIndex(entity => entity.CustomerIdentityId);
+        builder.HasIndex(entity => entity.CustomerIdentityId);
         builder.HasIndex(entity => entity.ClaimStatusId);
         builder.HasIndex(entity => entity.ClaimTypeId);
         builder.HasIndex(entity => entity.PriorityId);

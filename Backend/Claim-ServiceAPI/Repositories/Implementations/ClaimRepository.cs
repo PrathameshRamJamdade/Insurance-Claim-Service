@@ -21,7 +21,7 @@ public class ClaimRepository : IClaimRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<Claim>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Claim>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default)
     {
         return await BuildBaseQuery(asNoTracking: true)
             .Where(claim => claim.CustomerId == customerId)

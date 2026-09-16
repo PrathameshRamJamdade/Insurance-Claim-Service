@@ -75,6 +75,7 @@ builder.Services.AddAuthorization(options =>
         .RequireAuthenticatedUser()
         .RequireAssertion(context =>
             context.User.IsInRole("ClaimsAdjuster") ||
+            context.User.IsInRole(ClaimServiceRoles.Customer) ||
             context.User.HasClaim("permission", "Claim.Read")));
 });
 

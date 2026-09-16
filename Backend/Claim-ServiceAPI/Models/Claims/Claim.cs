@@ -7,9 +7,9 @@ public class Claim : AuditableEntityBase
 {
     public long ClaimId { get; set; }
 
-    public long PolicyId { get; set; }
+    public string PolicyId { get; set; } = string.Empty;
 
-    public long CustomerId { get; set; }
+    public string CustomerId { get; set; } = string.Empty;
 
     public Guid CustomerIdentityId { get; set; }
 

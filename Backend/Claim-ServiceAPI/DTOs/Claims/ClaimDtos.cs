@@ -10,9 +10,9 @@ public class ClaimSummaryDto
 
     public string ClaimNumber { get; set; } = string.Empty;
 
-    public long PolicyId { get; set; }
+    public string PolicyId { get; set; } = string.Empty;
 
-    public long CustomerId { get; set; }
+    public string CustomerId { get; set; } = string.Empty;
 
     public int ClaimTypeId { get; set; }
 
@@ -43,9 +43,9 @@ public class ClaimDetailDto : AuditableResponseDto
 {
     public long ClaimId { get; set; }
 
-    public long PolicyId { get; set; }
+    public string PolicyId { get; set; } = string.Empty;
 
-    public long CustomerId { get; set; }
+    public string CustomerId { get; set; } = string.Empty;
 
     public string ClaimNumber { get; set; } = string.Empty;
 
@@ -111,10 +111,12 @@ public class ClaimDetailDto : AuditableResponseDto
 public class CreateClaimDto
 {
     [Required]
-    public long PolicyId { get; set; }
+    [StringLength(64)]
+    public string PolicyId { get; set; } = string.Empty;
 
     [Required]
-    public long CustomerId { get; set; }
+    [StringLength(64)]
+    public string CustomerId { get; set; } = string.Empty;
 
     [Required]
     [StringLength(50)]

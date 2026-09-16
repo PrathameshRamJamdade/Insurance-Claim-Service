@@ -6,7 +6,7 @@ public interface IClaimRepository
 {
     Task<IReadOnlyList<Claim>> GetAllAsync(CancellationToken cancellationToken = default);
 
-    Task<IReadOnlyList<Claim>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default);
+    Task<IReadOnlyList<Claim>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<Claim>> GetByCustomerIdentityIdAsync(Guid customerIdentityId, CancellationToken cancellationToken = default);
 

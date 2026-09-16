@@ -26,7 +26,7 @@ public class ClaimService : IClaimService
             .ToList();
     }
 
-    public async Task<IReadOnlyList<ClaimSummaryDto>> GetByCustomerIdAsync(long customerId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<ClaimSummaryDto>> GetByCustomerIdAsync(string customerId, CancellationToken cancellationToken = default)
     {
         var claims = await _claimRepository.GetByCustomerIdAsync(customerId, cancellationToken);
 
